@@ -1,9 +1,12 @@
 package xml.parser;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -129,8 +132,9 @@ public class XMLParser {
 	 * @since 1.0
 	 * @param xml the string representation of the xml
 	 * @throws InvalidXMLFormatException thros if xml is not valid
+	 * @throws FileNotFoundException 
 	 */
-	public XMLParser(String xml) throws InvalidXMLFormatException {
+	public XMLParser(String xml) throws InvalidXMLFormatException, FileNotFoundException{
 		this(xml, false);
 	}
 	
@@ -144,16 +148,18 @@ public class XMLParser {
 	 * @param str string either a filename or the string representation of the xml
 	 * @param isFile boolean if str is a filename.
 	 * @throws InvalidXMLFormatException throws if xml is not valid
+	 * @throws FileNotFoundException 
 	 */
-	public XMLParser(String str, boolean isFile) throws InvalidXMLFormatException {
+	public XMLParser(String str, boolean isFile) throws InvalidXMLFormatException, FileNotFoundException {
 		sTag = new LinkedList<TagNode>();
 		eTag = new ArrayList<TagNode>();
 		oTag = new LinkedList<TagNode>();
 		if (isFile) {
-			//get xml string block from file
+			getFileString(str);
 		} else {
 			this.xml = str;
 		}
+		xml = xml.replaceAll("\r\n", "");
 		this.xmlHash = new HashMap<String, ArrayList<ParserNode>>();
 		//validate xml
 		validateXML();
@@ -166,6 +172,22 @@ public class XMLParser {
 //		System.out.println(eTag);
 		
 //		System.out.println(xmlHash);
+	}
+	
+	private void getFileString(String fileName) throws FileNotFoundException {
+		File f = new File(fileName);
+		StringBuilder str = new StringBuilder();
+		if (f.exists()) {
+			Scanner sc = new Scanner(f);
+			while (sc.hasNext()) {
+				str.append(sc.nextLine());
+			}
+			sc.close();
+			xml = str.toString();
+			System.out.println(xml);
+		} else {
+			throw new FileNotFoundException();
+		}
 	}
 	
 	/**

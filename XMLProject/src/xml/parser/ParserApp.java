@@ -1,5 +1,7 @@
 package xml.parser;
 
+import java.io.FileNotFoundException;
+
 import xml.exceptions.InvalidXMLFormatException;
 
 public class ParserApp {
@@ -16,7 +18,7 @@ public class ParserApp {
 				"</note>";
 		XMLParser xp;
 		try {
-			xp = new XMLParser(xml);
+			xp = new XMLParser("test.xml", true);
 			String elm = "note";
 			System.out.println(elm+ "= \n" + xp.getValue(elm));
 			elm = "close";
@@ -52,6 +54,9 @@ public class ParserApp {
 //			}
 			
 		} catch (InvalidXMLFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
