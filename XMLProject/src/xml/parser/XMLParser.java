@@ -132,7 +132,7 @@ public class XMLParser {
 	 * @since 1.0
 	 * @param xml the string representation of the xml
 	 * @throws InvalidXMLFormatException throws if xml is not valid
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException throw if file doesn't exist
 	 */
 	public XMLParser(String xml) throws InvalidXMLFormatException, FileNotFoundException{
 		this(xml, false);
@@ -148,7 +148,7 @@ public class XMLParser {
 	 * @param str string either a filename or the string representation of the xml
 	 * @param isFile boolean if str is a filename.
 	 * @throws InvalidXMLFormatException throws if xml is not valid
-	 * @throws FileNotFoundException 
+	 * @throws FileNotFoundException throws if file doesn't exist
 	 */
 	public XMLParser(String str, boolean isFile) throws InvalidXMLFormatException, FileNotFoundException {
 		sTag = new LinkedList<TagNode>();
