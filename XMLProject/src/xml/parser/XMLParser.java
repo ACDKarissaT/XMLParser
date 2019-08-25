@@ -237,13 +237,14 @@ public class XMLParser {
 		//parse the xml
 		//go through tags and populate hashmap
 		TagNode start;
-		while (sTag.peek() != null) {
-			start = sTag.poll();
-			putTag(start);
-		}
+		start = sTag.poll();
+		putTag(start);
 		
-		if (!eTag.isEmpty()) {
-			throw new InvalidXMLFormatException();
+		
+		if (!sTag.isEmpty()) {
+			throw new InvalidXMLFormatException("Extra content at end of document.");
+		} else if(!eTag.isEmpty()) {
+			throw new InvalidXMLFormatException("Extra closing tags.");
 		}
 		Set<String> keys = xmlHash.keySet();
 		for (String string : keys) {
