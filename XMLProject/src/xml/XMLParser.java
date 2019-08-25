@@ -2,6 +2,7 @@ package xml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * <p>
@@ -23,14 +24,17 @@ public class XMLParser {
 		}
 	}
 	
-	String xml;
-	HashMap<String, ArrayList<ParserNode>> xmlHash;
+	private String xml;
+	private HashMap<String, ArrayList<ParserNode>> xmlHash;
+	private LinkedList<String> sTag, eTag;
 	
 	public XMLParser(String xml) {
 		this(xml, false);
 	}
 	
 	public XMLParser(String str, boolean isFile) {
+		sTag = new LinkedList<String>();
+		eTag = new LinkedList<String>();
 		if (isFile) {
 			//get xml string block from file
 		} else {
@@ -39,7 +43,17 @@ public class XMLParser {
 		this.xmlHash = new HashMap<String, ArrayList<ParserNode>>();
 	}
 	
+	private void validateXML() {
+		//Search through xml string and
+		//check for prolog as first entry
+		//check for proper closing of tags
+		//check for root tag
+		//throw an exception if xml is not valid
+	}
 	
-	
+	private void parseXML() {
+		//parse the xml
+		//
+	}
 
 }
