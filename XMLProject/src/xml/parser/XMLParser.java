@@ -131,7 +131,7 @@ public class XMLParser {
 	 * @author Karissa Tuason
 	 * @since 1.0
 	 * @param xml the string representation of the xml
-	 * @throws InvalidXMLFormatException thros if xml is not valid
+	 * @throws InvalidXMLFormatException throws if xml is not valid
 	 * @throws FileNotFoundException 
 	 */
 	public XMLParser(String xml) throws InvalidXMLFormatException, FileNotFoundException{
@@ -174,6 +174,12 @@ public class XMLParser {
 //		System.out.println(xmlHash);
 	}
 	
+	
+	/**
+	 * Get's the entire file as a string and stores it into xml
+	 * @param fileName name of file
+	 * @throws FileNotFoundException throws if file isn't found
+	 */
 	private void getFileString(String fileName) throws FileNotFoundException {
 		File f = new File(fileName);
 		StringBuilder str = new StringBuilder();
@@ -203,8 +209,13 @@ public class XMLParser {
 		if (!oTag.isEmpty()) {
 			TagNode tn = oTag.get(0);
 			String[] prolog_elements = tn.tag.split(" +");
-			
-			
+			if (prolog_elements.length >= 3) {
+				if (prolog_elements[0].equals("?xml") && prolog_elements[1].startsWith("version") && prolog_elements[prolog_elements.length-1].endsWith("?")) {
+					//it is valid
+				} else {
+					throw new InvalidXMLFormatException();
+				}
+			}
 		} else {
 			throw new InvalidXMLFormatException();
 		}
