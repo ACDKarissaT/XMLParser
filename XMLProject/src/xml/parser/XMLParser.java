@@ -12,7 +12,7 @@ import xml.exceptions.InvalidXMLFormatException;
 
 /**
  * <p>
- * 	This is a simple XML Parser. It parses an XML string or file.
+ * 	This is a simple XML Parser. It parses an XML string or file. Once parsed can get the element values using getValue(element).
  * </p>
  * 
  * @author Karissa Tuason
@@ -101,7 +101,7 @@ public class XMLParser {
 	private String xml;
 	
 	/**
-	 * A hashmap of elements with their start and end index of their value on the xml string.
+	 * A hashmap of elements with the start and end index of their value on the xml string.
 	 */
 	private HashMap<String, ArrayList<ParserNode>> xmlHash;
 	
@@ -128,7 +128,7 @@ public class XMLParser {
 	 * @author Karissa Tuason
 	 * @since 1.0
 	 * @param xml the string representation of the xml
-	 * @throws InvalidXMLFormatException 
+	 * @throws InvalidXMLFormatException thros if xml is not valid
 	 */
 	public XMLParser(String xml) throws InvalidXMLFormatException {
 		this(xml, false);
@@ -143,7 +143,7 @@ public class XMLParser {
 	 * @since 1.0
 	 * @param str string either a filename or the string representation of the xml
 	 * @param isFile boolean if str is a filename.
-	 * @throws InvalidXMLFormatException 
+	 * @throws InvalidXMLFormatException throws if xml is not valid
 	 */
 	public XMLParser(String str, boolean isFile) throws InvalidXMLFormatException {
 		sTag = new LinkedList<TagNode>();
@@ -170,19 +170,22 @@ public class XMLParser {
 	
 	/**
 	 * <p>
-	 * Validates if xml string is in xml format.
+	 * Validates if xml string contains the xml prolog.
 	 * </p>
 	 * 
 	 * @return void
-	 * @throws InvalidXMLFormatException 
+	 * @throws InvalidXMLFormatException throws if xml is not valid
 	 */
 	private void validateXML() throws InvalidXMLFormatException {
 		getTags();
-		//fixETags();
-		//check for prolog as first entry
-		//check for proper closing of tags
-		//check for root tag
-		//throw an exception if xml is not valid
+		if (!oTag.isEmpty()) {
+			TagNode tn = oTag.get(0);
+			String[] prolog_elements = tn.tag.split(" +");
+			
+			
+		} else {
+			throw new InvalidXMLFormatException();
+		}
 	}
 	
 	
@@ -333,7 +336,7 @@ public class XMLParser {
 			index =s.indexOf("<" + string + ">");
 			oTag.add(new TagNode(string, index + indexOffset + string.length()+2, string.length()+2));
 			s.delete(index, index + string.length()+2);		
-			indexOffset += string.length() + 1;
+			indexOffset += string.length() + 2;
 		}
 		s = new StringBuilder(xml);
 		indexOffset = 0;
@@ -341,15 +344,15 @@ public class XMLParser {
 			index =s.indexOf("<" + string + ">");
 			sTag.add(new TagNode(string, index + indexOffset + string.length()+2, string.length()+2));
 			s.delete(index, index + string.length()+ 2);			
-			indexOffset += string.length() + 1;
+			indexOffset += string.length() + 2;
 		}
 		s= new StringBuilder(xml);
 		indexOffset = 0;
 		for (String string : end) {
 			index =s.indexOf("</" + string + ">");
-			eTag.add(new TagNode(string, index + indexOffset + string.length()+2, string.length()+2));
-			s.delete(index, index + string.length()+2);
-			indexOffset += string.length() + 1;
+			eTag.add(new TagNode(string, index + indexOffset, string.length()+3));
+			s.delete(index, index + string.length()+3);
+			indexOffset += string.length() + 3;
 		}
 		
 //		System.out.println(oTag);
@@ -357,24 +360,41 @@ public class XMLParser {
 //		System.out.println(eTag);
 	}
 	
-	public static void main(String[] args) {
-		String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" + 
-				"<note>\r\n" + 
-				"<close />" +
-				"<to>Tove</to>\r\n" + 
-				"<from><from>Jani</from></from>\r\n" + 
-				"<heading>Reminder</heading>\r\n" + 
-				"<body   >Don't forget me this weekend!</body     >\r\n" + 
-				"<from> hello </from>\r\n"+
-				"</note>";
-		XMLParser xp;
-		try {
-			xp = new XMLParser(xml);
-		} catch (InvalidXMLFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	/**
+	 * Returns the values found for the xml element.
+	 * @author Karissa Tuason
+	 * @since 1.0 
+	 * @param tag the element name
+	 * @return The values of the element or null if element isn't found.
+	 */
+	public String[] getValues(String tag) {
+		ArrayList<ParserNode> nodes = xmlHash.get(tag);
+		String[] values = null;
+		if (nodes != null) {
+			values = new String[nodes.size()];
+			int count = 0;
+			for (ParserNode parserNode : nodes) {
+				values[count] = xml.substring(parserNode.start, parserNode.end);
+				count++;
+			}
+			
 		}
-		
+		return values;
+	}
+	
+	/**
+	 * Matches the tag with the elements stored and returns the first value.
+	 * @param tag The element name.
+	 * @return the value of the element or null if element isn't found;
+	 */
+	public String getValue(String tag) {
+		ArrayList<ParserNode> nodes = xmlHash.get(tag);
+		String value = null;
+		if (nodes != null && !nodes.isEmpty()) {
+			ParserNode first = nodes.get(0);
+			value = xml.substring(first.start, first.end);
+		}
+		return value;
 	}
 
 }
