@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.Set;
@@ -72,15 +73,15 @@ public class XMLParser {
 	 * @author Karissa Tuason
 	 *
 	 */
-	private class TagNode{
+	private class TagNode implements Comparable <TagNode>{
 		String tag;
 		int index;
-		int length;
+		int count;
 		
-		public TagNode(String tag, int index, int length) {
+		public TagNode(String tag, int index, int count) {
 			this.tag = tag;
 			this.index = index;
-			this.length = length;
+			this.count = count;
 		}
 		
 		@Override
@@ -94,8 +95,19 @@ public class XMLParser {
 		
 		@Override
 		public String toString() {
-			return "TagNode[" + this.tag + " " + this.index+ " " + this.length + "]";
+			return "TagNode[" + this.tag + " " + this.index+ " " + this.count + "]";
 		}
+
+		@Override
+		public int compareTo(TagNode o) {
+			// TODO Auto-generated method stub
+			if (o != null) {
+				return Integer.compare(this.index, o.index);
+			}
+			return 0;
+		}
+
+		
 	}
 	
 	/**
@@ -107,6 +119,8 @@ public class XMLParser {
 	 * A hashmap of elements with the start and end index of their value on the xml string.
 	 */
 	private HashMap<String, ArrayList<ParserNode>> xmlHash;
+	
+	
 	
 	/**
 	 * List of start tags.
@@ -122,6 +136,16 @@ public class XMLParser {
 	 * List of other tags (prolog, comments, etc)
 	 */
 	private LinkedList<TagNode> oTag;
+	
+	/**
+	 * current node that the iterator is on.
+	 */
+	private Iterator<ParserNode> it;
+	
+	/**
+	 * Current element
+	 */
+	private String curr = "";
 	
 	/**
 	 * <p>
@@ -164,8 +188,7 @@ public class XMLParser {
 		//validate xml
 		validateXML();
 		//parse xml
-		parseXML();
-		
+		parseXML();		
 		
 //		System.out.println(oTag);
 //		System.out.println(sTag);
@@ -190,7 +213,6 @@ public class XMLParser {
 			}
 			sc.close();
 			xml = str.toString();
-			System.out.println(xml);
 		} else {
 			throw new FileNotFoundException();
 		}
@@ -368,7 +390,7 @@ public class XMLParser {
 		StringBuilder s = new StringBuilder(xml);
 		for (String string : other) {
 			index =s.indexOf("<" + string + ">");
-			oTag.add(new TagNode(string, index + indexOffset + string.length()+2, string.length()+2));
+			oTag.add(new TagNode(string, index + indexOffset + string.length()+2, 0));
 			s.delete(index, index + string.length()+2);		
 			indexOffset += string.length() + 2;
 		}
@@ -376,7 +398,7 @@ public class XMLParser {
 		indexOffset = 0;
 		for (String string : start) {
 			index =s.indexOf("<" + string + ">");
-			sTag.add(new TagNode(string, index + indexOffset + string.length()+2, string.length()+2));
+			sTag.add(new TagNode(string, index + indexOffset + string.length()+2, 0));
 			s.delete(index, index + string.length()+ 2);			
 			indexOffset += string.length() + 2;
 		}
@@ -384,7 +406,7 @@ public class XMLParser {
 		indexOffset = 0;
 		for (String string : end) {
 			index =s.indexOf("</" + string + ">");
-			eTag.add(new TagNode(string, index + indexOffset, string.length()+3));
+			eTag.add(new TagNode(string, index + indexOffset, 0));
 			s.delete(index, index + string.length()+3);
 			indexOffset += string.length() + 3;
 		}
@@ -417,16 +439,23 @@ public class XMLParser {
 	}
 	
 	/**
-	 * Matches the tag with the elements stored and returns the first value.
-	 * @param tag The element name.
-	 * @return the value of the element or null if element isn't found;
+	 * Gets current value of element. Iterator wraps around.
+	 * 
+	 * @param element
+	 * @return the current value of the element.
 	 */
-	public String getValue(String tag) {
-		ArrayList<ParserNode> nodes = xmlHash.get(tag);
+	public String getValue(String element) {
 		String value = null;
-		if (nodes != null && !nodes.isEmpty()) {
-			ParserNode first = nodes.get(0);
-			value = xml.substring(first.start, first.end);
+		if (xmlHash.containsKey(element)) {
+			ParserNode pn = null;
+			if (curr.equals(element) && it.hasNext()) {
+				pn = it.next();
+			} else {
+				it = xmlHash.get(element).iterator();
+				pn = it.next();
+				curr = element;
+			}
+			value = xml.substring(pn.start, pn.end);
 		}
 		return value;
 	}

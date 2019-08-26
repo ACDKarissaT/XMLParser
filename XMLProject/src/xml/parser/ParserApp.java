@@ -24,17 +24,16 @@ public class ParserApp {
 		XMLParser xp;
 		try {
 			xp = new XMLParser("test.xml", true);
-			String elm = "note";
-			System.out.println(elm+ "= \n" + xp.getValue(elm));
-			elm = "close";
-			System.out.println(elm+ "= \n" + xp.getValue(elm));
-			elm = "from";
-			System.out.println(elm+ "= \n" + xp.getValue(elm));
-			elm = "heading";
-			System.out.println(elm+ "= \n" + xp.getValue(elm));
+			String val;
+			for (int i = 0; i < 5; i++) {
+				val = xp.getValue("to");
+				System.out.println(val);
+			}
 			
+			
+			System.out.println("\n\n\nParser from string.\n");
 			xp = new XMLParser(xml);
-			elm = "from";
+			String elm = "from";
 			String[] values= xp.getValues(elm);
 			for (String string : values) {
 				System.out.println(elm + "= \n" + string);
