@@ -4,6 +4,11 @@ import java.io.FileNotFoundException;
 
 import xml.exceptions.InvalidXMLFormatException;
 
+/**
+ * Class that tests XMLParser. Creates a parser using file and string. Demonstates String getValue(String element) and String[] getValues(String element).
+ * @author Karissa Tuason
+ *
+ */
 public class ParserApp {
 
 	public static void main(String[] args) {
@@ -28,30 +33,13 @@ public class ParserApp {
 			elm = "heading";
 			System.out.println(elm+ "= \n" + xp.getValue(elm));
 			
-//			String[] values = xp.getValues(el);
-//			for (String string : values) {
-//				System.out.println(el + "= \n" + string);
-//			}
-//			el = "close";
-//			values = xp.getValues(el);
-//			for (String string : values) {
-//				System.out.println(el + "= \n" + string);
-//			}
-//			el = "to";
-//			values = xp.getValues(el);
-//			for (String string : values) {
-//				System.out.println(el + "= \n" + string);
-//			}
-//			el = "from";
-//			values = xp.getValues(el);
-//			for (String string : values) {
-//				System.out.println(el + "= \n" + string);
-//			}
-//			el = "heading";
-//			values = xp.getValues(el);
-//			for (String string : values) {
-//				System.out.println(el + "= \n" + string);
-//			}
+			xp = new XMLParser(xml);
+			elm = "from";
+			String[] values= xp.getValues(elm);
+			for (String string : values) {
+				System.out.println(elm + "= \n" + string);
+			}
+			
 			
 		} catch (InvalidXMLFormatException e) {
 			// TODO Auto-generated catch block
